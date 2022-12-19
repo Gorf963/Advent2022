@@ -20,16 +20,16 @@ fn main() {
     };
 
     let elf = file_parser(input_file);
-    println!(" The Elf with the most cal is Elf {0}",elf);
+    println!(" The Elf with the most cal is Elf {0} with cal of {1}",elf.0,elf.1);
 }
-fn file_parser(f:File) -> i32 {
+fn file_parser(f:File) -> (i32,i32) {
     //load buffrer reader
     let reader = BufReader::new(f);
 
     //Read and find max
     let mut largest_cal:i32 = 0;
     let mut largest_elf:i32 = 0;
-    let mut elf_num:i32 = 1;
+    let mut elf_num:i32 = 0;
     let mut temp_cal:i32 = 0;
 
     for line in reader.lines() {
@@ -40,19 +40,23 @@ fn file_parser(f:File) -> i32 {
             Err(error) => panic!("Bad line in file {:?}", error),
         };
 
-        if  l.chars().count() ==0 {
+        if  l.len() ==0 {
             if temp_cal > largest_cal {
-                largest_cal = temp_cal;
-                largest_elf = elf_num;
+                largest_cal = temp_cal.clone();
+                largest_elf = elf_num.clone();
             }
             elf_num +=1 ;
-            largest_cal = 0;
+            temp_cal = 0;
         }
         else {
             temp_cal += l.parse::<i32>().unwrap();
         }
-         
         
     }
-    return largest_elf;
+    //check last elf         
+    if temp_cal > largest_cal {
+        largest_cal = temp_cal.clone();
+        largest_elf = elf_num.clone();
+    }   
+    return (largest_elf,largest_cal) ;
 }
